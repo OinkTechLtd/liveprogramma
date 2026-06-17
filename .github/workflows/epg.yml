@@ -1,0 +1,73 @@
+name: 🤖 EPG Robot — поиск настоящего расписания
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'   # каждые 3 часа
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'lib/**'
+      - 'package.json'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  epg:
+    name: 📺 Обновить расписание
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Установка зависимостей
+        run: npm ci
+
+      - name: 🤖 Поисковой робот EPG (реальные источники, без моков)
+        run: npm run robot
+        env:
+          NODE_OPTIONS: '--max-old-space-size=1024'
+          TZ: 'Europe/Moscow'
+        timeout-minutes: 18
+
+      - name: 🏗️ Сборка статического сайта
+        run: npm run build:site-only
+
+      - name: 📊 Статистика обновления
+        run: |
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('data/schedule.json')) { console.log('⚠️  schedule.json не найден'); process.exit(0); }
+            const d = JSON.parse(fs.readFileSync('data/schedule.json','utf-8'));
+            const channels = Object.keys(d.channels||{}).length;
+            const withData = Object.keys(d.schedule||{}).length;
+            const progs = Object.values(d.schedule||{}).reduce((a,v)=>a+v.length,0);
+            console.log('📺 Каналов в реестре: ' + channels);
+            console.log('✅ С реальным расписанием: ' + withData);
+            console.log('📋 Передач: ' + progs);
+            console.log('🕐 Обновлено: ' + d.updated);
+          "
+
+      - name: 🚀 Commit & Push
+        run: |
+          git config user.name  "EPG Robot 🤖"
+          git config user.email "bot@oinktech.ltd"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Нет изменений — пропускаем коммит"
+          else
+            STAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "🤖 EPG обновление [$STAMP]"
+            git push
+          fi
