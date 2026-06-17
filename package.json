@@ -1,0 +1,21 @@
+{
+  "name": "live-programm",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Телепрограмма прямого эфира — поисковой робот собирает настоящее расписание каналов из открытого интернета (без мок-данных) и публикует статический сайт.",
+  "type": "module",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "robot": "node scripts/epg-robot.js",
+    "build": "npm run robot && node scripts/build-site.js",
+    "build:site-only": "node scripts/build-site.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "fast-xml-parser": "^4.5.0"
+  },
+  "author": "OinkTech Ltd | FUN RUSSIA CRMP",
+  "license": "MIT"
+}

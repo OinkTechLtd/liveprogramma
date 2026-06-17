@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LiveПрограмма — Виджет</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;--s2:#181818;--s3:#222;--border:#2a2a2a;
+  --text:#fff;--muted:#777;--accent:#fe2c55;--green:#25f4ee;
+  --gold:#ffd700;--r:10px
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;overflow:hidden}
+
+.wrap{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+/* ── ПЛЕЕР ── */
+.player-area{
+  flex-shrink:0;width:100%;aspect-ratio:16/9;
+  background:#000;position:relative;overflow:hidden
+}
+.player-area iframe{width:100%;height:100%;border:none}
+.player-ph{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(135deg,#0d0d12,#06060a);cursor:pointer
+}
+.player-ph:hover .play-btn{background:rgba(254,44,85,.25);border-color:var(--accent)}
+.play-btn{
+  width:64px;height:64px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);transition:all .2s
+}
+.play-btn svg{width:24px;height:24px;fill:#fff;margin-left:3px}
+.ph-ch{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* Лайв бейдж */
+.live-badge{
+  position:absolute;top:10px;left:10px;
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;display:flex;align-items:center;gap:4px
+}
+.live-dot{width:5px;height:5px;background:#fff;border-radius:50%;animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── ПРОГРАММА СЕЙЧАС ── */
+.now-bar{
+  padding:10px 12px 8px;
+  background:var(--s2);border-bottom:1px solid var(--border);flex-shrink:0
+}
+.now-label{
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:5px
+}
+.now-title{font-size:15px;font-weight:700;line-height:1.2;margin-bottom:4px}
+.now-time{font-size:11px;color:var(--muted);margin-bottom:6px}
+.prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),#ff6b81);border-radius:2px}
+
+/* ── СЛЕДУЮЩИЕ ── */
+.next-list{flex:1;overflow-y:auto;padding:0 12px 4px;scrollbar-width:none}
+.next-list::-webkit-scrollbar{display:none}
+.next-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 0;border-bottom:1px solid var(--border)
+}
+.next-row:last-child{border-bottom:none}
+.next-time{font-size:11px;font-weight:700;color:var(--muted);width:38px;flex-shrink:0}
+.next-title{font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-dur{font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* ── РЕКЛАМНЫЙ БАННЕР ── */
+.promo{
+  flex-shrink:0;
+  background:linear-gradient(135deg,#1a0a1e,#0a0a1f);
+  border-top:1px solid rgba(254,44,85,.25);
+  padding:9px 12px;
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  text-decoration:none;transition:background .2s;position:relative;overflow:hidden
+}
+.promo::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(254,44,85,.06),transparent);
+  animation:shimmer 2.5s ease infinite
+}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.promo:hover{background:linear-gradient(135deg,#220a28,#0d0d28)}
+.promo-icon{
+  width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),#ff6b35);
+  display:flex;align-items:center;justify-content:center;font-size:18px
+}
+.promo-text{flex:1;min-width:0}
+.promo-line1{font-size:11px;font-weight:800;color:var(--text);letter-spacing:.2px}
+.promo-line2{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.promo-arrow{
+  font-size:16px;color:var(--accent);flex-shrink:0;
+  animation:bounce 1.5s ease infinite
+}
+@keyframes bounce{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+
+/* Атрибуция */
+.attr{
+  font-size:9px;color:rgba(255,255,255,.18);
+  text-align:center;padding:4px;flex-shrink:0;background:var(--bg)
+}
+.attr a{color:rgba(255,255,255,.3);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Плеер -->
+  <div class="player-area" id="playerArea">
+    <div class="player-ph" id="playerPh" onclick="startPlay()">
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="ph-ch" id="phChName">Загрузка...</div>
+    </div>
+  </div>
+
+  <!-- Сейчас в эфире -->
+  <div class="now-bar" id="nowBar">
+    <div class="now-label"><span class="live-dot"></span>СЕЙЧАС</div>
+    <div class="now-title" id="nowTitle">—</div>
+    <div class="now-time"  id="nowTime">—</div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Следующие передачи -->
+  <div class="next-list" id="nextList"></div>
+
+  <!-- Рекламный баннер -->
+  <a class="promo" id="promoLink" href="#" target="_blank" rel="noopener">
+    <div class="promo-icon">📺</div>
+    <div class="promo-text">
+      <div class="promo-line1">Смотрите все каналы в LiveПрограмма</div>
+      <div class="promo-line2" id="promoSub">Расписание · Прямой эфир · Без рекламы</div>
+    </div>
+    <div class="promo-arrow">›</div>
+  </a>
+
+  <div class="attr">
+    Powered by <a href="#" id="attrLink" target="_blank">LiveПрограмма</a>
+  </div>
+</div>
+
+<script>
+// Параметры из URL
+const P = new URLSearchParams(location.search);
+const chId      = P.get("ch")    || "";
+const appUrl    = P.get("app")   || "https://YOUR_NAME.github.io/live-programm/";
+const dataUrl   = P.get("data")  || (appUrl.replace(/\/?$/, "/") + "data/schedule.json");
+const embedMode = P.get("mode")  || "full";  // full | compact
+
+// Ссылки
+document.getElementById("promoLink").href = appUrl + "?ch=" + encodeURIComponent(chId);
+document.getElementById("attrLink").href  = appUrl;
+
+const PLAYERJS = [
+  "https://raw.githubusercontent.com/OinkTechLtd/rulive/main/playerjs.js",
+  "https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js",
+];
+
+let streamUrl = "";
+let schedule  = [];
+
+function nowTs(){ return Math.floor(Date.now()/1000); }
+function fmtT(ts){
+  const d = new Date(ts*1000);
+  const h = (d.getUTCHours()+3)%24;
+  const m = d.getUTCMinutes();
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+
+async function boot(){
+  try {
+    const r = await fetch(dataUrl, {cache:"no-cache"});
+    if(!r.ok) throw new Error("no data");
+    const data = await r.json();
+
+    const ch = data.channels?.[chId];
+    if(ch){
+      document.getElementById("phChName").textContent = ch.name || chId;
+      streamUrl = ch.stream_url || "";
+      // Обновить промо
+      document.getElementById("promoSub").textContent =
+        `${ch.name || chId} · и ещё ${Object.keys(data.channels).length-1} каналов`;
+    }
+
+    schedule = data.schedule?.[chId] || [];
+    render();
+    setInterval(render, 30000);
+  } catch(e){
+    document.getElementById("nowTitle").textContent = "Расписание недоступно";
+  }
+}
+
+function render(){
+  const ts = nowTs();
+  const cur = schedule.find(p=>p.start<=ts&&p.stop>ts);
+  const nxt = schedule.filter(p=>p.start>ts).slice(0,5);
+
+  // Сейчас
+  if(cur){
+    document.getElementById("nowTitle").textContent = cur.title;
+    document.getElementById("nowTime").textContent  = fmtT(cur.start)+" — "+fmtT(cur.stop);
+    const pct = Math.min(100, Math.round((ts-cur.start)/(cur.stop-cur.start)*100));
+    document.getElementById("progFill").style.width = pct+"%";
+  }
+
+  // Следующие
+  const nl = document.getElementById("nextList");
+  nl.innerHTML = nxt.map(p=>{
+    const dur = Math.round((p.stop-p.start)/60);
+    return `<div class="next-row">
+      <span class="next-time">${fmtT(p.start)}</span>
+      <span class="next-title">${esc(p.title)}</span>
+      <span class="next-dur">${dur} мин</span>
+    </div>`;
+  }).join("") || `<div style="padding:14px;color:#555;font-size:12px;text-align:center">Расписание скоро появится</div>`;
+}
+
+function startPlay(){
+  if(!streamUrl){
+    document.getElementById("playerPh").innerHTML =
+      `<div style="color:#555;font-size:12px;text-align:center;padding:20px">Поток не найден<br><span style="font-size:10px">Откройте <a href="${appUrl}" target="_blank" style="color:#fe2c55">LiveПрограмма</a></span></div>`;
+    return;
+  }
+
+  const area = document.getElementById("playerArea");
+  // Добавляем live-бейдж
+  const badge = document.createElement("div");
+  badge.className = "live-badge";
+  badge.innerHTML = '<span class="live-dot"></span>В ЭФИРЕ';
+  area.append(badge);
+
+  // Пробуем PlayerJS
+  const s = document.createElement("script");
+  s.src = PLAYERJS[0];
+  s.onload = ()=>{
+    document.getElementById("playerPh").remove();
+    const d = document.createElement("div");
+    d.id = "pjsRoot"; area.prepend(d);
+    if(typeof Playerjs !== "undefined"){
+      new Playerjs({ id:"pjsRoot", file:streamUrl, autoplay:1 });
+    } else {
+      fallbackHLS(area, streamUrl);
+    }
+  };
+  s.onerror = ()=> fallbackHLS(area, streamUrl);
+  document.head.append(s);
+}
+
+function fallbackHLS(area, url){
+  document.getElementById("playerPh")?.remove();
+  const video = document.createElement("video");
+  video.style.cssText = "width:100%;height:100%;background:#000";
+  video.controls = true; video.autoplay = true; video.playsInline = true;
+  area.prepend(video);
+  const hs = document.createElement("script");
+  hs.src = PLAYERJS[1];
+  hs.onload = ()=>{
+    if(Hls && Hls.isSupported()){
+      const hls = new Hls();
+      hls.loadSource(url); hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, ()=>video.play().catch(()=>{}));
+    } else { video.src=url; video.play().catch(()=>{}); }
+  };
+  document.head.append(hs);
+}
+
+function esc(s){ return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+boot();
+</script>
+</body>
+</html>
