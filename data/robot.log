@@ -12081,3 +12081,54 @@
 [01:59:48]   ✅ embed.html
 [01:59:48]   ✅ player.html
 [01:59:48] ✅ docs/ собран
+[08:42:38] 🤖 Запуск EPG-робота v3 (Node.js)...
+[08:42:38] 📂 Загружен реестр каналов: 25 каналов
+[08:42:38] 📡 Шаг 1: реальные XMLTV-агрегаторы...
+[08:42:38]   → XMLTV: https://epgshare01.online/epgshare01/epg_ripper_ALL_SOURCES1.xml.gz
+[08:42:42] ⚠️  https://epgshare01.online/epgshare01/epg_ripper_ALL_SOURCES1.xml.gz: Cannot create a string longer than 0x1fffffe8 characters
+[08:42:42]   → XMLTV: https://raw.githubusercontent.com/Free-TV/IPTV/master/epg.xml
+[08:42:43] ⚠️  https://raw.githubusercontent.com/Free-TV/IPTV/master/epg.xml: HTTP 404 для https://raw.githubusercontent.com/Free-TV/IPTV/master/epg.xml
+[08:42:43]   → XMLTV: https://iptv-org.github.io/epg/guides/ru.xml
+[08:42:43] ⚠️  https://iptv-org.github.io/epg/guides/ru.xml: HTTP 404 для https://iptv-org.github.io/epg/guides/ru.xml
+[08:42:43] ⚠️  Ни один публичный XMLTV-источник не ответил в этот раз
+[08:42:43] 🔍 Шаг 2: веб-поиск расписания для 25 каналов без данных...
+[08:42:44]   ✅ Первый канал: 33 передач со страницы programma-peredach.com
+[08:42:48]   ✅ Россия 1: 175 передач со страницы tv.mail.ru
+[08:42:49] ⚠️  webSearch: ни один backend не дал результатов для "НТВ программа передач сегодня"
+[08:42:49] ⚠️  webSearch: ни один backend не дал результатов для "СТС программа передач сегодня"
+[08:42:49] ⚠️  webSearch: ни один backend не дал результатов для "РЕН ТВ программа передач сегодня"
+[08:42:49] ⚠️  webSearch: ни один backend не дал результатов для "ТНТ программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "Пятый канал программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "ТВ Центр программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "ОТР программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "Звезда программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "ТВ-3 программа передач сегодня"
+[08:42:50] ⚠️  webSearch: ни один backend не дал результатов для "Суббота! программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "Дом Кино программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "Карусель программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "Наука программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "МУЗ-ТВ программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "Матч! ТВ программа передач сегодня"
+[08:42:51] ⚠️  webSearch: ни один backend не дал результатов для "Россия 24 программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "Домашний программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "Пятница! программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "Россия Культура программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "ТНТ4 программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "2x2 программа передач сегодня"
+[08:42:52] ⚠️  webSearch: ни один backend не дал результатов для "Мир программа передач сегодня"
+[08:42:53] ⚠️  webSearch: ни один backend не дал результатов для "Спас программа передач сегодня"
+[08:42:53] 📺 Шаг 3 (резерв): Яндекс.ТВ API для 23 каналов без расписания...
+[08:42:54] ⚠️  Яндекс.ТВ каталог недоступен: HTTP 404 для https://tv.yandex.ru/ajax/i-tv-region/get?resource=schedule&params=%7B%22channelLimit%22%3A1000%2C%22channelProgramsLimit%22%3A1%2C%22fields%22%3A%22schedules%2Cchannel%2Ctitle%2CsiteUrl%2Clogo%2CoriginalSize%2Csrc%2Cid%2Csynonyms%22%7D
+[08:42:54] 🎬 Шаг 4: загрузка m3u8-плейлистов...
+[08:42:54]   📺 Плейлист https://raw.githubusercontent.com/OinkTechLLC/livem3u/main/zabava-full.m3u: 2222 записей
+[08:42:54]   📺 Плейлист https://raw.githubusercontent.com/OinkTechLtd/rulive/main/russ.m3u: 12 записей
+[08:42:54]   📺 Плейлист https://raw.githubusercontent.com/OinkTechLLC/livem3u/main/smotrim.m3u: 310 записей
+[08:42:54]   📡 Привязано 0 реальных потоков
+[08:42:54] 💾 Реестр каналов сохранён: 25 каналов
+[08:42:54] ✅ Итого: 25 каналов в реестре, 2 с реальным расписанием (194 передач), 16.3с
+[05:42:55] 📊 schedule.json: 25 каналов, 194 передач
+[05:42:55] 🏗️  Собираем docs/...
+[05:42:55]   ✅ index.html
+[05:42:55]   ✅ embed.html
+[05:42:55]   ✅ player.html
+[05:42:55] ✅ docs/ собран
